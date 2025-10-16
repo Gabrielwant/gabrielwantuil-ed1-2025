@@ -1,103 +1,59 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "formas.h"
-struct forma {
+
+struct forma
+{
+    char tipo; // 'c' ou 'r'
     int id;
-    int tipo;
-    double x1;
-    double y1;
-    double x2;
-    double y2;
-    double r;
-    double w;
-    double h;
-    char* corb;
-    char* corp;
-    char* texto;
-    char pos;
+    double x, y, w, h, r;
+    char corb[30];
+    char corp[30];
 };
-static char* duplica(const char* s){
-    if(!s) return NULL;
-    char* r = malloc(strlen(s)+1);
-    if(!r) return NULL;
-    strcpy(r,s);
-    return r;
-}
-Forma* criaCirculo(int id, double x, double y, double r_, const char* corb, const char* corp){
-    Forma* f = malloc(sizeof(Forma));
-    if(!f) return NULL;
+
+Forma *criaCirculo(int id, double x, double y, double r, const char *corb, const char *corp)
+{
+    Forma *f = malloc(sizeof(Forma));
+    if (!f)
+        return NULL;
+    f->tipo = 'c';
     f->id = id;
-    f->tipo = 1;
-    f->x1 = x;
-    f->y1 = y;
-    f->r = r_;
-    f->corb = duplica(corb);
-    f->corp = duplica(corp);
-    f->texto = NULL;
+    f->x = x;
+    f->y = y;
+    f->r = r;
+    strcpy(f->corb, corb);
+    strcpy(f->corp, corp);
     return f;
 }
-Forma* criaRetangulo(int id, double x, double y, double w, double h, const char* corb, const char* corp){
-    Forma* f = malloc(sizeof(Forma));
-    if(!f) return NULL;
+
+Forma *criaRetangulo(int id, double x, double y, double w, double h, const char *corb, const char *corp)
+{
+    Forma *f = malloc(sizeof(Forma));
+    if (!f)
+        return NULL;
+    f->tipo = 'r';
     f->id = id;
-    f->tipo = 2;
-    f->x1 = x;
-    f->y1 = y;
+    f->x = x;
+    f->y = y;
     f->w = w;
     f->h = h;
-    f->corb = duplica(corb);
-    f->corp = duplica(corp);
-    f->texto = NULL;
+    strcpy(f->corb, corb);
+    strcpy(f->corp, corp);
     return f;
 }
-Forma* criaLinha(int id, double x1, double y1, double x2, double y2, const char* cor){
-    Forma* f = malloc(sizeof(Forma));
-    if(!f) return NULL;
-    f->id = id;
-    f->tipo = 3;
-    f->x1 = x1;
-    f->y1 = y1;
-    f->x2 = x2;
-    f->y2 = y2;
-    f->corb = duplica(cor);
-    f->corp = NULL;
-    f->texto = NULL;
-    return f;
+
+void imprimeForma(Forma *f)
+{
+    if (f->tipo == 'c')
+        printf("Circulo %d: centro(%.2f, %.2f) raio %.2f corb=%s corp=%s\n",
+               f->id, f->x, f->y, f->r, f->corb, f->corp);
+    else if (f->tipo == 'r')
+        printf("Retangulo %d: pos(%.2f, %.2f) w=%.2f h=%.2f corb=%s corp=%s\n",
+               f->id, f->x, f->y, f->w, f->h, f->corb, f->corp);
 }
-Forma* criaTexto(int id, double x, double y, const char* corb, const char* corp, char pos, const char* txt){
-    Forma* f = malloc(sizeof(Forma));
-    if(!f) return NULL;
-    f->id = id;
-    f->tipo = 4;
-    f->x1 = x;
-    f->y1 = y;
-    f->pos = pos;
-    f->corb = duplica(corb);
-    f->corp = duplica(corp);
-    f->texto = duplica(txt);
-    return f;
-}
-double areaForma(Forma* f){
-    if(!f) return 0.0;
-    if(f->tipo == 1) return 3.14159265358979323846 * f->r * f->r;
-    if(f->tipo == 2) return f->w * f->h;
-    if(f->tipo == 4) return 20.0 * (f->texto ? strlen(f->texto) : 0);
-    if(f->tipo == 3) {
-        double dx = f->x2 - f->x1;
-        double dy = f->y2 - f->y1;
-        double len = sqrt(dx*dx + dy*dy);
-        return 2.0 * len;
-    }
-    return 0.0;
-}
-int sobreposicao(Forma* a, Forma* b){
-    (void)a; (void)b;
-    return 0;
-}
-void liberaForma(Forma* f){
-    if(!f) return;
-    if(f->corb) free(f->corb);
-    if(f->corp) free(f->corp);
-    if(f->texto) free(f->texto);
+
+void liberaForma(Forma *f)
+{
     free(f);
 }

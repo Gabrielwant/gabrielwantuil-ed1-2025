@@ -1,58 +1,85 @@
 #include <stdlib.h>
 #include "fila.h"
-struct fila {
-    int capacidade;
-    int ini;
+
+struct fila
+{
+    int inicio;
     int fim;
-    int n;
-    void** dados;
+    int tamanho;
+    int capacidade;
+    void **dados;
 };
-Fila* criaFila(){
-    Fila* f = malloc(sizeof(Fila));
-    if(!f) return NULL;
-    f->capacidade = 16;
-    f->ini = 0;
+
+Fila *criaFila()
+{
+    Fila *f = malloc(sizeof(Fila));
+    if (!f)
+        return NULL;
+    f->capacidade = 10;
+    f->inicio = 0;
     f->fim = 0;
-    f->n = 0;
-    f->dados = malloc(sizeof(void*) * f->capacidade);
-    if(!f->dados){ free(f); return NULL; }
+    f->tamanho = 0;
+    f->dados = malloc(sizeof(void *) * f->capacidade);
+    if (!f->dados)
+    {
+        free(f);
+        return NULL;
+    }
     return f;
 }
-void liberaFila(Fila* f){
-    if(!f) return;
+
+void liberaFila(Fila *f)
+{
+    if (!f)
+        return;
     free(f->dados);
     free(f);
 }
-int filaVazia(Fila* f){
-    if(!f) return 1;
-    return f->n == 0;
+
+int filaVazia(Fila *f)
+{
+    return f == NULL || f->tamanho == 0;
 }
-int filaEnqueue(Fila* f, void* elem){
-    if(!f) return 0;
-    if(f->n >= f->capacidade){
-        int nc = f->capacidade * 2;
-        void** nd = malloc(sizeof(void*) * nc);
-        if(!nd) return 0;
-        for(int i=0;i<f->n;i++) nd[i] = f->dados[(f->ini + i) % f->capacidade];
-        free(f->dados);
-        f->dados = nd;
-        f->capacidade = nc;
-        f->ini = 0;
-        f->fim = f->n;
+
+int insereFila(Fila *f, void *elem)
+{
+    if (!f)
+        return 0;
+    if (f->tamanho == f->capacidade)
+    {
+        int novaCap = f->capacidade * 2;
+        void **novo = realloc(f->dados, sizeof(void *) * novaCap);
+        if (!novo)
+            return 0;
+        f->dados = novo;
+        f->capacidade = novaCap;
     }
-    f->dados[f->fim++] = elem;
-    if(f->fim >= f->capacidade) f->fim = 0;
-    f->n++;
+    f->dados[f->fim] = elem;
+    f->fim = (f->fim + 1) % f->capacidade;
+    f->tamanho++;
     return 1;
 }
-void* filaDequeue(Fila* f){
-    if(!f || f->n == 0) return NULL;
-    void* r = f->dados[f->ini++];
-    if(f->ini >= f->capacidade) f->ini = 0;
-    f->n--;
-    return r;
+
+void *removeFila(Fila *f)
+{
+    if (!f || f->tamanho == 0)
+        return NULL;
+    void *elem = f->dados[f->inicio];
+    f->inicio = (f->inicio + 1) % f->capacidade;
+    f->tamanho--;
+    return elem;
 }
-void* filaPrimeiro(Fila* f){
-    if(!f || f->n == 0) return NULL;
-    return f->dados[f->ini];
+
+void *frenteFila(Fila *f)
+{
+    if (!f || f->tamanho == 0)
+        return NULL;
+    return f->dados[f->inicio];
+}
+
+int tamanhoFila(Fila *f)
+{
+    if (!f)
+        return 0;
+    return f->tamanho;
 }
