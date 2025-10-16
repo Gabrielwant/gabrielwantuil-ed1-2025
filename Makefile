@@ -10,3 +10,5 @@ $(SRCDIR)/%.o: $(SRCDIR)/%.c
 clean:
 	rm -f $(SRCDIR)/*.o ted
 .PHONY: all clean
+testepilha: src/pilha.o src/testepilha.o
+	$(CC) $(CFLAGS) -o $@ $^
