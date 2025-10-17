@@ -3,6 +3,53 @@
 #include <string.h>
 #include "qry.h"
 #include "disparador.h"
+#include "formas.h"
+
+void processaArena(FILE *svg)
+{
+  printf("[calc] Calculando e gerando SVG final...\n");
+
+  // Exemplo de teste da arena com duas formas
+  Forma *f1 = criaCirculo(1, 100, 100, 30, "black", "red");
+  Forma *f2 = criaRetangulo(2, 120, 120, 60, 40, "blue", "yellow");
+
+  double pontuacao = 0;
+
+  if (sobrepoe(f1, f2))
+  {
+    double areaI = areaForma(f1);
+    double areaJ = areaForma(f2);
+
+    if (areaI < areaJ)
+    {
+      pontuacao += areaI;
+      fprintf(svg, "<!-- Circulo destruído -->\n");
+      desenhaForma(svg, f2);
+    }
+    else
+    {
+      pontuacao += areaJ;
+      mudaCorBorda(f2, getCorPreenchimento(f1));
+      desenhaForma(svg, f1);
+      desenhaForma(svg, f2);
+      Forma *clone = clonaForma(f1);
+      trocaCores(clone);
+      desenhaForma(svg, clone);
+      liberaForma(clone);
+    }
+  }
+  else
+  {
+    desenhaForma(svg, f1);
+    desenhaForma(svg, f2);
+  }
+
+  fprintf(svg, "<text x=\"10\" y=\"40\" fill=\"black\">Pontuação final: %.2f</text>\n", pontuacao);
+  printf("Pontuação final: %.2f\n", pontuacao);
+
+  liberaForma(f1);
+  liberaForma(f2);
+}
 
 void processaQry(const char *caminhoQry)
 {
@@ -99,8 +146,7 @@ void processaQry(const char *caminhoQry)
 
     else if (strcmp(comando, "calc") == 0)
     {
-      printf("[calc] Calculando e gerando SVG final...\n");
-      fprintf(svg, "<text x=\"10\" y=\"20\" fill=\"black\">Simulação concluída.</text>\n");
+      processaArena(svg);
     }
 
     else

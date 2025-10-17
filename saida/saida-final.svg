@@ -2,8 +2,11 @@
 <circle cx="100.00" cy="100.00" r="10" fill="blue" stroke="black" />
 <rect x="200.00" y="150.00" width="20" height="20" fill="yellow" stroke="black" />
 <rect x="300.00" y="150.00" width="20" height="20" fill="yellow" stroke="black" />
-<circle cx="0.00" cy="150.00" r="10" fill="green" stroke="black" />
-<circle cx="0.00" cy="0.00" r="10" fill="red" stroke="black" />
-<circle cx="0.00" cy="0.00" r="10" fill="gray" stroke="black" />
-<text x="10" y="20" fill="black">Simulação concluída.</text>
+<circle cx="120.00" cy="100.00" r="10" fill="green" stroke="black" />
+<circle cx="170.00" cy="150.00" r="10" fill="red" stroke="black" />
+<circle cx="170.00" cy="150.00" r="10" fill="gray" stroke="black" />
+<circle cx="100.00" cy="100.00" r="30.00" fill="red" stroke="black" />
+<rect x="120.00" y="120.00" width="60.00" height="40.00" fill="yellow" stroke="red" />
+<circle cx="100.00" cy="100.00" r="30.00" fill="black" stroke="red" />
+<text x="10" y="40" fill="black">Pontuação final: 2400.00</text>
 </svg>
