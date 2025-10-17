@@ -8,4 +8,7 @@ Forma *criaRetangulo(int id, double x, double y, double w, double h, const char 
 void imprimeForma(Forma *f);
 void liberaForma(Forma *f);
 
+void escreveCirculoSVG(FILE *svg, Forma *f);
+void escreveRetanguloSVG(FILE *svg, Forma *f);
+
 #endif

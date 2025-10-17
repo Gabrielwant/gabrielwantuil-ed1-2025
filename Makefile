@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -std=c99 -Wall -Wextra -fstack-protector-all -Iinclude
 SRCDIR = src
-OBJ = $(SRCDIR)/main.o $(SRCDIR)/pilha.o $(SRCDIR)/fila.o $(SRCDIR)/formas.o $(SRCDIR)/disparador.o
+OBJ = $(SRCDIR)/main.o $(SRCDIR)/pilha.o $(SRCDIR)/fila.o $(SRCDIR)/formas.o $(SRCDIR)/disparador.o $(SRCDIR)/qry.o
 
 all: ted
 

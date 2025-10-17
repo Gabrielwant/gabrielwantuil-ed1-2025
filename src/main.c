@@ -2,23 +2,27 @@
 #include <stdlib.h>
 #include <string.h>
 #include "formas.h"
+#include "qry.h"
 
 int main(int argc, char *argv[])
 {
     char arquivoGeo[100] = "";
+    char arquivoQry[100] = "";
     char dirSaida[100] = "";
 
     for (int i = 1; i < argc; i++)
     {
         if (strcmp(argv[i], "-f") == 0 && i + 1 < argc)
             strcpy(arquivoGeo, argv[++i]);
+        else if (strcmp(argv[i], "-q") == 0 && i + 1 < argc)
+            strcpy(arquivoQry, argv[++i]);
         else if (strcmp(argv[i], "-o") == 0 && i + 1 < argc)
             strcpy(dirSaida, argv[++i]);
     }
 
     if (strlen(arquivoGeo) == 0 || strlen(dirSaida) == 0)
     {
-        printf("Uso: ted -f arquivo.geo -o diretorio_saida\n");
+        printf("Uso: ted -f arquivo.geo [-q arquivo.qry] -o diretorio_saida\n");
         return 1;
     }
 
@@ -29,7 +33,19 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    printf("Lendo arquivo: %s\n", arquivoGeo);
+    char svgPath[200];
+    sprintf(svgPath, "%s/base.svg", dirSaida);
+
+    FILE *svg = fopen(svgPath, "w");
+    if (!svg)
+    {
+        printf("Erro ao criar %s\n", svgPath);
+        fclose(geo);
+        return 1;
+    }
+
+    fprintf(svg, "<svg xmlns=\"http://www.w3.org/2000/svg\">\n");
+
     char tipo;
     int id;
     double x, y, w, h, r;
@@ -39,20 +55,33 @@ int main(int argc, char *argv[])
     {
         if (tipo == 'c')
         {
-            fscanf(geo, "%d %lf %lf %lf %s %s", &id, &x, &y, &r, corb, corp);
-            Forma *f = criaCirculo(id, x, y, r, corb, corp);
-            imprimeForma(f);
-            liberaForma(f);
+            if (fscanf(geo, "%d %lf %lf %lf %s %s", &id, &x, &y, &r, corb, corp) == 6)
+            {
+                Forma *f = criaCirculo(id, x, y, r, corb, corp);
+                escreveCirculoSVG(svg, f);
+                liberaForma(f);
+            }
         }
         else if (tipo == 'r')
         {
-            fscanf(geo, "%d %lf %lf %lf %lf %s %s", &id, &x, &y, &w, &h, corb, corp);
-            Forma *f = criaRetangulo(id, x, y, w, h, corb, corp);
-            imprimeForma(f);
-            liberaForma(f);
+            if (fscanf(geo, "%d %lf %lf %lf %lf %s %s", &id, &x, &y, &w, &h, corb, corp) == 7)
+            {
+                Forma *f = criaRetangulo(id, x, y, w, h, corb, corp);
+                escreveRetanguloSVG(svg, f);
+                liberaForma(f);
+            }
         }
     }
 
+    fprintf(svg, "</svg>\n");
+
     fclose(geo);
+    fclose(svg);
+
+    printf("Arquivo SVG gerado em: %s\n", svgPath);
+
+    if (strlen(arquivoQry) > 0)
+        processaQry(arquivoQry);
+
     return 0;
 }

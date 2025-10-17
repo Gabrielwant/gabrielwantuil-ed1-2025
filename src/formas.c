@@ -57,3 +57,15 @@ void liberaForma(Forma *f)
 {
     free(f);
 }
+
+void escreveCirculoSVG(FILE *svg, Forma *f)
+{
+    fprintf(svg, "<circle cx=\"%.2f\" cy=\"%.2f\" r=\"%.2f\" stroke=\"%s\" fill=\"%s\" />\n",
+            f->x, f->y, f->r, f->corb, f->corp);
+}
+
+void escreveRetanguloSVG(FILE *svg, Forma *f)
+{
+    fprintf(svg, "<rect x=\"%.2f\" y=\"%.2f\" width=\"%.2f\" height=\"%.2f\" stroke=\"%s\" fill=\"%s\" />\n",
+            f->x, f->y, f->w, f->h, f->corb, f->corp);
+}
