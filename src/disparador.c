@@ -61,3 +61,17 @@ int dspDisparador(Disparador *d, double dx, double dy, char modo)
     printf("Disparo modo %c realizado para (%.2f, %.2f)\n", modo, d->x, d->y);
     return 1;
 }
+
+double getXDisparador(Disparador *d)
+{
+    if (!d)
+        return 0;
+    return d->x;
+}
+
+double getYDisparador(Disparador *d)
+{
+    if (!d)
+        return 0;
+    return d->y;
+}

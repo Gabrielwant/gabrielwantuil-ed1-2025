@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+<circle cx="100.00" cy="100.00" r="10" fill="blue" stroke="black" />
+<rect x="200.00" y="150.00" width="20" height="20" fill="yellow" stroke="black" />
+<rect x="300.00" y="150.00" width="20" height="20" fill="yellow" stroke="black" />
+<circle cx="0.00" cy="150.00" r="10" fill="green" stroke="black" />
+<circle cx="0.00" cy="0.00" r="10" fill="red" stroke="black" />
+<circle cx="0.00" cy="0.00" r="10" fill="gray" stroke="black" />
+<text x="10" y="20" fill="black">Simulação concluída.</text>
+</svg>
