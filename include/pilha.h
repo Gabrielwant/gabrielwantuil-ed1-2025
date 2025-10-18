@@ -1,14 +1,13 @@
 #ifndef PILHA_H
 #define PILHA_H
+#include "formas.h"
 
 typedef struct pilha Pilha;
 
-Pilha *criaPilha();
+Pilha *criaPilha(void);
 void liberaPilha(Pilha *p);
+void push(Pilha *p, Forma *f);
+Forma *pop(Pilha *p);
 int pilhaVazia(Pilha *p);
-int pilhaPush(Pilha *p, void *elem);
-void *pilhaPop(Pilha *p);
-void *pilhaTopo(Pilha *p);
-int tamanhoPilha(Pilha *p);
 
 #endif

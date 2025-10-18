@@ -1,76 +1,56 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include "pilha.h"
 
+typedef struct no
+{
+    Forma *f;
+    struct no *prox;
+} No;
+
 struct pilha
 {
-    int topo;
-    int capacidade;
-    void **dados;
+    No *topo;
 };
 
-Pilha *criaPilha()
+Pilha *criaPilha(void)
 {
     Pilha *p = malloc(sizeof(Pilha));
-    if (!p)
-        return NULL;
-    p->capacidade = 10;
-    p->topo = 0;
-    p->dados = malloc(sizeof(void *) * p->capacidade);
-    if (!p->dados)
-    {
-        free(p);
-        return NULL;
-    }
+    p->topo = NULL;
     return p;
 }
 
-void liberaPilha(Pilha *p)
+void push(Pilha *p, Forma *f)
 {
-    if (!p)
-        return;
-    free(p->dados);
-    free(p);
+    No *n = malloc(sizeof(No));
+    n->f = f;
+    n->prox = p->topo;
+    p->topo = n;
+}
+
+Forma *pop(Pilha *p)
+{
+    if (!p || !p->topo)
+        return NULL;
+    No *n = p->topo;
+    Forma *f = n->f;
+    p->topo = n->prox;
+    free(n);
+    return f;
 }
 
 int pilhaVazia(Pilha *p)
 {
-    return p == NULL || p->topo == 0;
+    return !p || p->topo == NULL;
 }
 
-int pilhaPush(Pilha *p, void *elem)
+void liberaPilha(Pilha *p)
 {
-    if (!p)
-        return 0;
-    if (p->topo == p->capacidade)
+    while (!pilhaVazia(p))
     {
-        int novaCap = p->capacidade * 2;
-        void **novo = realloc(p->dados, sizeof(void *) * novaCap);
-        if (!novo)
-            return 0;
-        p->dados = novo;
-        p->capacidade = novaCap;
+        Forma *f = pop(p);
+        if (f)
+            liberaForma(f);
     }
-    p->dados[p->topo++] = elem;
-    return 1;
-}
-
-void *pilhaPop(Pilha *p)
-{
-    if (!p || p->topo == 0)
-        return NULL;
-    return p->dados[--p->topo];
-}
-
-void *pilhaTopo(Pilha *p)
-{
-    if (!p || p->topo == 0)
-        return NULL;
-    return p->dados[p->topo - 1];
-}
-
-int tamanhoPilha(Pilha *p)
-{
-    if (!p)
-        return 0;
-    return p->topo;
+    free(p);
 }

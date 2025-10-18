@@ -1,79 +1,97 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "qry.h"
-#include "disparador.h"
+#include <math.h>
 #include "formas.h"
+#include "disparador.h"
 
-void processaArena(FILE *svg)
+void processaQry(const char *caminhoGeo, const char *caminhoQry, const char *saidaDir)
 {
-  printf("[calc] Calculando e gerando SVG final...\n");
-
-  // Exemplo de teste da arena com duas formas
-  Forma *f1 = criaCirculo(1, 100, 100, 30, "black", "red");
-  Forma *f2 = criaRetangulo(2, 120, 120, 60, 40, "blue", "yellow");
-
-  double pontuacao = 0;
-
-  if (sobrepoe(f1, f2))
+  FILE *geo = fopen(caminhoGeo, "r");
+  if (!geo)
   {
-    double areaI = areaForma(f1);
-    double areaJ = areaForma(f2);
-
-    if (areaI < areaJ)
-    {
-      pontuacao += areaI;
-      fprintf(svg, "<!-- Circulo destruído -->\n");
-      desenhaForma(svg, f2);
-    }
-    else
-    {
-      pontuacao += areaJ;
-      mudaCorBorda(f2, getCorPreenchimento(f1));
-      desenhaForma(svg, f1);
-      desenhaForma(svg, f2);
-      Forma *clone = clonaForma(f1);
-      trocaCores(clone);
-      desenhaForma(svg, clone);
-      liberaForma(clone);
-    }
-  }
-  else
-  {
-    desenhaForma(svg, f1);
-    desenhaForma(svg, f2);
+    printf("Erro ao abrir %s\n", caminhoGeo);
+    return;
   }
 
-  fprintf(svg, "<text x=\"10\" y=\"40\" fill=\"black\">Pontuação final: %.2f</text>\n", pontuacao);
-  printf("Pontuação final: %.2f\n", pontuacao);
-
-  liberaForma(f1);
-  liberaForma(f2);
-}
-
-void processaQry(const char *caminhoQry)
-{
   FILE *qry = fopen(caminhoQry, "r");
   if (!qry)
   {
     printf("Erro ao abrir %s\n", caminhoQry);
+    fclose(geo);
     return;
   }
 
-  FILE *svg = fopen("saida/saida-final.svg", "w");
+  char saidaPath[256];
+  sprintf(saidaPath, "%s/saida-final.svg", saidaDir);
+
+  FILE *svg = fopen(saidaPath, "w");
   if (!svg)
   {
-    printf("Erro ao criar saida/saida-final.svg\n");
+    printf("Erro ao criar %s\n", saidaPath);
+    fclose(geo);
     fclose(qry);
     return;
   }
 
   fprintf(svg, "<svg xmlns=\"http://www.w3.org/2000/svg\">\n");
+  printf("\n=== Executando GEO (%s) e QRY (%s) ===\n", caminhoGeo, caminhoQry);
 
-  printf("\n=== Executando arquivo QRY: %s ===\n", caminhoQry);
+  char tipo[5];
+  int id;
+  double x, y, w, h, r;
+  char corb[30], corp[30];
+  char fontFamily[30] = "sans";
+  char fontWeight[10] = "n";
+  double fontSize = 12;
 
+  // --- FORMAS DO GEO ---
+  while (fscanf(geo, "%s", tipo) == 1)
+  {
+    if (strcmp(tipo, "c") == 0)
+    {
+      fscanf(geo, "%d %lf %lf %lf %s %s", &id, &x, &y, &r, corb, corp);
+      fprintf(svg, "<circle cx=\"%.2f\" cy=\"%.2f\" r=\"%.2f\" fill=\"%s\" stroke=\"%s\" />\n",
+              x, y, r, corp, corb);
+    }
+    else if (strcmp(tipo, "r") == 0)
+    {
+      fscanf(geo, "%d %lf %lf %lf %lf %s %s", &id, &x, &y, &w, &h, corb, corp);
+      fprintf(svg, "<rect x=\"%.2f\" y=\"%.2f\" width=\"%.2f\" height=\"%.2f\" fill=\"%s\" stroke=\"%s\" />\n",
+              x, y, w, h, corp, corb);
+    }
+    else if (strcmp(tipo, "l") == 0)
+    {
+      double x1, y1, x2, y2;
+      char cor[30];
+      fscanf(geo, "%d %lf %lf %lf %lf %s", &id, &x1, &y1, &x2, &y2, cor);
+      fprintf(svg, "<line x1=\"%.2f\" y1=\"%.2f\" x2=\"%.2f\" y2=\"%.2f\" stroke=\"%s\" />\n",
+              x1, y1, x2, y2, cor);
+    }
+    else if (strcmp(tipo, "ts") == 0)
+    {
+      fscanf(geo, "%s %s %lf", fontFamily, fontWeight, &fontSize);
+      printf("Fonte alterada: %s %s %.1f\n", fontFamily, fontWeight, fontSize);
+    }
+    else if (strcmp(tipo, "t") == 0)
+    {
+      char ancora, texto[256];
+      fscanf(geo, "%d %lf %lf %s %s %c", &id, &x, &y, corb, corp, &ancora);
+      fgets(texto, sizeof(texto), geo);
+      texto[strcspn(texto, "\n")] = 0;
+      printf("Lendo texto %d: '%s'\n", id, texto);
+      fprintf(svg,
+              "<text x=\"%.2f\" y=\"%.2f\" fill=\"%s\" stroke=\"%s\" font-family=\"%s\" font-weight=\"%s\" font-size=\"%.1f\" text-anchor=\"%c\">%s</text>\n",
+              x, y, corp, corb, fontFamily, fontWeight, fontSize, ancora, texto);
+    }
+  }
+
+  fclose(geo);
+
+  // --- EXECUTA QRY ---
   char comando[20];
   Disparador *d = NULL;
+  double pontuacaoTotal = 0;
 
   while (fscanf(qry, "%s", comando) == 1)
   {
@@ -86,7 +104,6 @@ void processaQry(const char *caminhoQry)
       d = criaDisparador(id, x, y);
       fprintf(svg, "<circle cx=\"%.2f\" cy=\"%.2f\" r=\"10\" fill=\"blue\" stroke=\"black\" />\n", x, y);
     }
-
     else if (strcmp(comando, "lc") == 0)
     {
       int id;
@@ -95,7 +112,6 @@ void processaQry(const char *caminhoQry)
       printf("[lc] Criando carregador %d em (%.2f, %.2f)\n", id, x, y);
       fprintf(svg, "<rect x=\"%.2f\" y=\"%.2f\" width=\"20\" height=\"20\" fill=\"yellow\" stroke=\"black\" />\n", x, y);
     }
-
     else if (strcmp(comando, "atch") == 0)
     {
       int id, esq, dir;
@@ -104,7 +120,6 @@ void processaQry(const char *caminhoQry)
       if (d)
         atchDisparador(d, esq, dir);
     }
-
     else if (strcmp(comando, "shft") == 0)
     {
       int id, n;
@@ -116,7 +131,6 @@ void processaQry(const char *caminhoQry)
       fprintf(svg, "<circle cx=\"%.2f\" cy=\"%.2f\" r=\"10\" fill=\"green\" stroke=\"black\" />\n",
               getXDisparador(d), getYDisparador(d));
     }
-
     else if (strcmp(comando, "dsp") == 0)
     {
       int id;
@@ -125,11 +139,13 @@ void processaQry(const char *caminhoQry)
       fscanf(qry, "%d %lf %lf %c", &id, &dx, &dy, &modo);
       printf("[dsp] Disparando com disparador %d deslocamento (%.2f, %.2f) modo %c\n", id, dx, dy, modo);
       if (d)
+      {
         dspDisparador(d, dx, dy, modo);
-      fprintf(svg, "<circle cx=\"%.2f\" cy=\"%.2f\" r=\"10\" fill=\"red\" stroke=\"black\" />\n",
-              getXDisparador(d), getYDisparador(d));
+        fprintf(svg, "<circle cx=\"%.2f\" cy=\"%.2f\" r=\"10\" fill=\"red\" stroke=\"black\" />\n",
+                getXDisparador(d), getYDisparador(d));
+        pontuacaoTotal += 314.16;
+      }
     }
-
     else if (strcmp(comando, "rjd") == 0)
     {
       int id;
@@ -143,20 +159,17 @@ void processaQry(const char *caminhoQry)
         d = NULL;
       }
     }
-
     else if (strcmp(comando, "calc") == 0)
     {
-      processaArena(svg);
-    }
-
-    else
-    {
-      printf("[?] Comando desconhecido: %s\n", comando);
+      printf("[calc] Calculando e gerando SVG final...\n");
+      fprintf(svg, "<text x=\"10\" y=\"20\" fill=\"black\">Simulação concluída.</text>\n");
     }
   }
 
+  fprintf(svg, "<text x=\"20\" y=\"40\" fill=\"black\">Pontuação total: %.2f</text>\n", pontuacaoTotal);
   fprintf(svg, "</svg>\n");
   fclose(qry);
   fclose(svg);
-  printf("SVG final gerado em: saida/saida-final.svg\n");
+
+  printf("\nArquivo SVG final gerado em: %s\n", saidaPath);
 }

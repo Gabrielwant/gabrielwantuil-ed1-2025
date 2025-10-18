@@ -1,12 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg">
+<circle cx="100.00" cy="100.00" r="40.00" fill="red" stroke="black" />
+<rect x="200.00" y="150.00" width="80.00" height="50.00" fill="yellow" stroke="blue" />
+<line x1="50.00" y1="250.00" x2="300.00" y2="250.00" stroke="green" />
+<text x="150.00" y="200.00" fill="orange" stroke="black" font-family="serif" font-weight="b" font-size="18.0" text-anchor="m"> Texto centralizado</text>
+<text x="100.00" y="300.00" fill="pink" stroke="purple" font-family="cursive" font-weight="l" font-size="14.0" text-anchor="i"> Texto à esquerda</text>
+<text x="300.00" y="300.00" fill="cyan" stroke="brown" font-family="sans" font-weight="b+" font-size="20.0" text-anchor="f"> Texto à direita</text>
 <circle cx="100.00" cy="100.00" r="10" fill="blue" stroke="black" />
 <rect x="200.00" y="150.00" width="20" height="20" fill="yellow" stroke="black" />
 <rect x="300.00" y="150.00" width="20" height="20" fill="yellow" stroke="black" />
-<circle cx="120.00" cy="100.00" r="10" fill="green" stroke="black" />
-<circle cx="170.00" cy="150.00" r="10" fill="red" stroke="black" />
-<circle cx="170.00" cy="150.00" r="10" fill="gray" stroke="black" />
-<circle cx="100.00" cy="100.00" r="30.00" fill="red" stroke="black" />
-<rect x="120.00" y="120.00" width="60.00" height="40.00" fill="yellow" stroke="red" />
-<circle cx="100.00" cy="100.00" r="30.00" fill="black" stroke="red" />
-<text x="10" y="40" fill="black">Pontuação final: 2400.00</text>
+<circle cx="100.00" cy="100.00" r="10" fill="green" stroke="black" />
+<circle cx="150.00" cy="150.00" r="10" fill="red" stroke="black" />
+<circle cx="150.00" cy="150.00" r="10" fill="gray" stroke="black" />
+<text x="10" y="20" fill="black">Simulação concluída.</text>
+<text x="20" y="40" fill="black">Pontuação total: 314.16</text>
 </svg>

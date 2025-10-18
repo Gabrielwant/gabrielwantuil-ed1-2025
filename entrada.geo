@@ -7,5 +7,3 @@ ts cursive l 14
 t 5 100 300 purple pink i Texto à esquerda
 ts sans b+ 20
 t 6 300 300 brown cyan f Texto à direita
-
-
