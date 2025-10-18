@@ -47,29 +47,62 @@ int main(int argc, char *argv[])
     fprintf(svg, "<svg xmlns=\"http://www.w3.org/2000/svg\">\n");
 
     char tipo;
-    int id;
-    double x, y, w, h, r;
-    char corb[30], corp[30];
+    char fontFamily[16] = "sans";
+    char fontWeight[8] = "n";
+    double fontSize = 12.0;
 
     while (fscanf(geo, " %c", &tipo) == 1)
     {
         if (tipo == 'c')
         {
-            if (fscanf(geo, "%d %lf %lf %lf %s %s", &id, &x, &y, &r, corb, corp) == 6)
-            {
-                Forma *f = criaCirculo(id, x, y, r, corb, corp);
-                escreveCirculoSVG(svg, f);
-                liberaForma(f);
-            }
+            int id;
+            double x, y, r;
+            char corb[30], corp[30];
+            fscanf(geo, "%d %lf %lf %lf %s %s", &id, &x, &y, &r, corb, corp);
+            Forma *f = criaCirculo(id, x, y, r, corb, corp);
+            escreveCirculoSVG(svg, f);
+            liberaForma(f);
         }
         else if (tipo == 'r')
         {
-            if (fscanf(geo, "%d %lf %lf %lf %lf %s %s", &id, &x, &y, &w, &h, corb, corp) == 7)
-            {
-                Forma *f = criaRetangulo(id, x, y, w, h, corb, corp);
-                escreveRetanguloSVG(svg, f);
-                liberaForma(f);
-            }
+            int id;
+            double x, y, w, h;
+            char corb[30], corp[30];
+            fscanf(geo, "%d %lf %lf %lf %lf %s %s", &id, &x, &y, &w, &h, corb, corp);
+            Forma *f = criaRetangulo(id, x, y, w, h, corb, corp);
+            escreveRetanguloSVG(svg, f);
+            liberaForma(f);
+        }
+        else if (tipo == 'l')
+        {
+            int id;
+            double x1, y1, x2, y2;
+            char cor[30];
+            fscanf(geo, "%d %lf %lf %lf %lf %s", &id, &x1, &y1, &x2, &y2, cor);
+            Forma *f = criaLinha(id, x1, y1, x2, y2, cor);
+            escreveLinhaSVG(svg, f);
+            liberaForma(f);
+        }
+        else if (tipo == 't')
+        {
+            int id;
+            double x, y;
+            char corb[30], corp[30], a, texto[256];
+            fscanf(geo, "%d %lf %lf %s %s %c", &id, &x, &y, corb, corp, &a);
+            fgets(texto, sizeof(texto), geo);
+            texto[strcspn(texto, "\r\n")] = 0;
+            Forma *f = criaTexto(id, x, y, corb, corp, a, texto);
+            escreveTextoSVG(svg, f, fontFamily, fontWeight, fontSize);
+            liberaForma(f);
+        }
+        else if (tipo == 'ts')
+        {
+            char fam[16], weight[8];
+            double size;
+            fscanf(geo, "%s %s %lf", fam, weight, &size);
+            strcpy(fontFamily, fam);
+            strcpy(fontWeight, weight);
+            fontSize = size;
         }
     }
 

@@ -1,4 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg">
 <circle cx="100.00" cy="100.00" r="40.00" fill="red" stroke="black" />
 <rect x="200.00" y="150.00" width="80.00" height="50.00" fill="yellow" stroke="blue" />
+<line x1="50.00" y1="250.00" x2="300.00" y2="250.00" stroke="green" />
+<text x="300.00" y="250.00" fill="blue" stroke="" font-family="sans" font-weight="normal" font-size="12.0" text-anchor="start">s serif b 18</text>
+<text x="150.00" y="200.00" fill="orange" stroke="black" font-family="sans" font-weight="normal" font-size="12.0" text-anchor="middle"> Texto centralizado</text>
+<text x="150.00" y="200.00" fill="orange" stroke="black" font-family="sans" font-weight="normal" font-size="12.0" text-anchor="middle">s cursive l 14</text>
+<text x="100.00" y="300.00" fill="pink" stroke="purple" font-family="sans" font-weight="normal" font-size="12.0" text-anchor="start"> Texto à esquerda</text>
+<text x="100.00" y="300.00" fill="pink" stroke="purple" font-family="sans" font-weight="normal" font-size="12.0" text-anchor="start">s sans b+ 20</text>
+<text x="300.00" y="300.00" fill="cyan" stroke="brown" font-family="sans" font-weight="normal" font-size="12.0" text-anchor="end"> Texto à direita</text>
 </svg>
