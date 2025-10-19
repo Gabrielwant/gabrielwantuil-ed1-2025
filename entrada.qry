@@ -1,8 +1,0 @@
-pd 1 100 100
-lc 2 200 150
-lc 3 300 150
-atch 1 2 3
-shft 1 D 2
-dsp 1 50 50 A
-rjd 1
-calc

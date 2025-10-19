@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200">
+<style> text { font-family:sans; font-size: 12.0px; font-weight:n; }</style>
+<circle cx="250.00" cy="250.00" r="15.00" stroke="red" fill="yellow" fill-opacity="0.5" />
+<text x="250.00" y="250.00" fill="red">13</text>
+<text x="400.00" y="400.00" fill="black">f alvo</text>
+</svg>

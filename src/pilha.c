@@ -1,56 +1,12 @@
+
 #include <stdio.h>
 #include <stdlib.h>
-#include "pilha.h"
+#include "jogo.h"
 
-typedef struct no
-{
-    Forma *f;
-    struct no *prox;
-} No;
-
-struct pilha
-{
-    No *topo;
-};
-
-Pilha *criaPilha(void)
-{
-    Pilha *p = malloc(sizeof(Pilha));
-    p->topo = NULL;
-    return p;
-}
-
-void push(Pilha *p, Forma *f)
-{
-    No *n = malloc(sizeof(No));
-    n->f = f;
-    n->prox = p->topo;
-    p->topo = n;
-}
-
-Forma *pop(Pilha *p)
-{
-    if (!p || !p->topo)
-        return NULL;
-    No *n = p->topo;
-    Forma *f = n->f;
-    p->topo = n->prox;
-    free(n);
-    return f;
-}
-
-int pilhaVazia(Pilha *p)
-{
-    return !p || p->topo == NULL;
-}
-
-void liberaPilha(Pilha *p)
-{
-    while (!pilhaVazia(p))
-    {
-        Forma *f = pop(p);
-        if (f)
-            liberaForma(f);
-    }
-    free(p);
-}
+typedef struct no { Forma f; struct no* n; } No;
+struct pilha { No* t; int n; };
+Pilha criaPilha(void){ struct pilha* p=(struct pilha*)malloc(sizeof(struct pilha)); p->t=NULL;p->n=0; return (Pilha)p; }
+void empilha(Pilha pp, Forma f){ struct pilha* p=(struct pilha*)pp; No* x=(No*)malloc(sizeof(No)); x->f=f; x->n=p->t; p->t=x; p->n++; }
+Forma desempilha(Pilha pp){ struct pilha* p=(struct pilha*)pp; if(!p->t) return NULL; No* x=p->t; p->t=x->n; Forma f=x->f; free(x); p->n--; return f; }
+int pilhaVazia(Pilha pp){ struct pilha* p=(struct pilha*)pp; return p->t==NULL; }
+void destroiPilha(Pilha pp){ struct pilha* p=(struct pilha*)pp; while(p->t){ No* x=p->t; p->t=x->n; free(x); } free(p); }
