@@ -6,6 +6,13 @@
 #include "forma.h"
 #include "disparador.h"
 
+// Estrutura para armazenar posições de formas esmagadas
+typedef struct
+{
+  double x;
+  double y;
+} PosicaoEsmagada;
+
 // Variáveis globais do sistema
 static Fila chao = NULL;
 static Fila arena = NULL;
@@ -22,6 +29,10 @@ static int num_disparos = 0;
 static int num_esmagadas = 0;
 static int num_clonadas = 0;
 
+// Array para armazenar posições de formas esmagadas
+static PosicaoEsmagada posicoes_esmagadas[1000];
+static int num_posicoes_esmagadas = 0;
+
 // Estilo de texto atual
 static char font_family[50] = "sans-serif";
 static char font_weight[20] = "normal";
@@ -35,6 +46,7 @@ void init_sistema()
 {
   chao = create_fila();
   arena = create_fila();
+  num_posicoes_esmagadas = 0;
 }
 
 void processar_comando_geo(char *linha)
@@ -320,10 +332,21 @@ void processar_calc()
     {
       if (area1 < area2)
       {
-        // f1 é esmagada
+        // f1 é esmagada - REGISTRAR POSIÇÃO
+        double x_esmagada = get_x_forma(f1);
+        double y_esmagada = get_y_forma(f1);
+
+        if (num_posicoes_esmagadas < 1000)
+        {
+          posicoes_esmagadas[num_posicoes_esmagadas].x = x_esmagada;
+          posicoes_esmagadas[num_posicoes_esmagadas].y = y_esmagada;
+          num_posicoes_esmagadas++;
+        }
+
         if (txt_out)
         {
-          fprintf(txt_out, "  Forma %d ESMAGADA (área menor)\n", get_id_forma(f1));
+          fprintf(txt_out, "  Forma %d ESMAGADA (área menor) na posição (%.2f, %.2f)\n",
+                  get_id_forma(f1), x_esmagada, y_esmagada);
         }
         pontos_round += area1;
         pontuacao_total += area1;
@@ -403,6 +426,19 @@ void gerar_svg(char *filename)
     Forma f = (Forma)get_data_fila(chao, p);
     escreve_forma_svg(f, svg);
     p = get_next_fila(chao, p);
+  }
+
+  // ADICIONAR ASTERISCOS VERMELHOS NAS POSIÇÕES DAS FORMAS ESMAGADAS
+  for (int i = 0; i < num_posicoes_esmagadas; i++)
+  {
+    double x = posicoes_esmagadas[i].x;
+    double y = posicoes_esmagadas[i].y;
+
+    // Desenhar asterisco como texto SVG
+    fprintf(svg, "<text x=\"%.2f\" y=\"%.2f\" font-size=\"30\" fill=\"red\" "
+                 "text-anchor=\"middle\" dominant-baseline=\"middle\" "
+                 "font-weight=\"bold\">*</text>\n",
+            x, y);
   }
 
   fprintf(svg, "</svg>\n");
