@@ -1,12 +1,121 @@
-
-#include <stdio.h>
 #include <stdlib.h>
-#include "jogo.h"
+#include <stdio.h>
+#include "fila.h"
 
-typedef struct no { Forma f; struct no* n; } No;
-struct fila { No* i; No* f; int n; };
-Fila criaFila(void){ struct fila* q=(struct fila*)malloc(sizeof(struct fila)); q->i=NULL;q->f=NULL;q->n=0; return (Fila)q; }
-void enfileira(Fila qq, Forma g){ struct fila* q=(struct fila*)qq; No* x=(No*)malloc(sizeof(No)); x->f=g; x->n=NULL; if(!q->f){ q->i=q->f=x; } else { q->f->n=x; q->f=x; } q->n++; }
-Forma desenfileira(Fila qq){ struct fila* q=(struct fila*)qq; if(!q->i) return NULL; No* x=q->i; q->i=x->n; if(!q->i) q->f=NULL; Forma f=x->f; free(x); q->n--; return f; }
-int filaVazia(Fila qq){ struct fila* q=(struct fila*)qq; return q->i==NULL; }
-void destroiFila(Fila qq){ struct fila* q=(struct fila*)qq; while(q->i){ No* x=q->i; q->i=x->n; free(x); } free(q); }
+typedef struct no
+{
+  void *dado;
+  struct no *prox;
+} No;
+
+typedef struct fila
+{
+  No *inicio;
+  No *fim;
+  int tamanho;
+} FilaStr;
+
+Fila create_fila()
+{
+  FilaStr *f = (FilaStr *)malloc(sizeof(FilaStr));
+  f->inicio = NULL;
+  f->fim = NULL;
+  f->tamanho = 0;
+  return f;
+}
+
+void enqueue(Fila f, void *info)
+{
+  FilaStr *fila = (FilaStr *)f;
+  No *novo = (No *)malloc(sizeof(No));
+  novo->dado = info;
+  novo->prox = NULL;
+
+  if (fila->fim == NULL)
+  {
+    fila->inicio = novo;
+    fila->fim = novo;
+  }
+  else
+  {
+    fila->fim->prox = novo;
+    fila->fim = novo;
+  }
+  fila->tamanho++;
+}
+
+void *dequeue(Fila f)
+{
+  FilaStr *fila = (FilaStr *)f;
+  if (fila->inicio == NULL)
+  {
+    return NULL;
+  }
+
+  No *temp = fila->inicio;
+  void *dado = temp->dado;
+  fila->inicio = fila->inicio->prox;
+
+  if (fila->inicio == NULL)
+  {
+    fila->fim = NULL;
+  }
+
+  free(temp);
+  fila->tamanho--;
+  return dado;
+}
+
+void *front(Fila f)
+{
+  FilaStr *fila = (FilaStr *)f;
+  if (fila->inicio == NULL)
+  {
+    return NULL;
+  }
+  return fila->inicio->dado;
+}
+
+int is_empty_fila(Fila f)
+{
+  FilaStr *fila = (FilaStr *)f;
+  return fila->inicio == NULL;
+}
+
+int size_fila(Fila f)
+{
+  FilaStr *fila = (FilaStr *)f;
+  return fila->tamanho;
+}
+
+void destroy_fila(Fila f)
+{
+  FilaStr *fila = (FilaStr *)f;
+  while (!is_empty_fila(f))
+  {
+    dequeue(f);
+  }
+  free(fila);
+}
+
+Posic get_first_fila(Fila f)
+{
+  FilaStr *fila = (FilaStr *)f;
+  return fila->inicio;
+}
+
+Posic get_next_fila(Fila f, Posic p)
+{
+  No *no = (No *)p;
+  if (no == NULL)
+    return NULL;
+  return no->prox;
+}
+
+void *get_data_fila(Fila f, Posic p)
+{
+  No *no = (No *)p;
+  if (no == NULL)
+    return NULL;
+  return no->dado;
+}

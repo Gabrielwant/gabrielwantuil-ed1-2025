@@ -1,12 +1,81 @@
-
-#include <stdio.h>
 #include <stdlib.h>
-#include "jogo.h"
+#include <stdio.h>
+#include "pilha.h"
 
-typedef struct no { Forma f; struct no* n; } No;
-struct pilha { No* t; int n; };
-Pilha criaPilha(void){ struct pilha* p=(struct pilha*)malloc(sizeof(struct pilha)); p->t=NULL;p->n=0; return (Pilha)p; }
-void empilha(Pilha pp, Forma f){ struct pilha* p=(struct pilha*)pp; No* x=(No*)malloc(sizeof(No)); x->f=f; x->n=p->t; p->t=x; p->n++; }
-Forma desempilha(Pilha pp){ struct pilha* p=(struct pilha*)pp; if(!p->t) return NULL; No* x=p->t; p->t=x->n; Forma f=x->f; free(x); p->n--; return f; }
-int pilhaVazia(Pilha pp){ struct pilha* p=(struct pilha*)pp; return p->t==NULL; }
-void destroiPilha(Pilha pp){ struct pilha* p=(struct pilha*)pp; while(p->t){ No* x=p->t; p->t=x->n; free(x); } free(p); }
+typedef struct no
+{
+  void *dado;
+  struct no *prox;
+} No;
+
+typedef struct pilha
+{
+  No *topo;
+  int tamanho;
+} PilhaStr;
+
+Pilha create_pilha()
+{
+  PilhaStr *p = (PilhaStr *)malloc(sizeof(PilhaStr));
+  p->topo = NULL;
+  p->tamanho = 0;
+  return p;
+}
+
+void push(Pilha p, void *info)
+{
+  PilhaStr *pilha = (PilhaStr *)p;
+  No *novo = (No *)malloc(sizeof(No));
+  novo->dado = info;
+  novo->prox = pilha->topo;
+  pilha->topo = novo;
+  pilha->tamanho++;
+}
+
+void *pop(Pilha p)
+{
+  PilhaStr *pilha = (PilhaStr *)p;
+  if (pilha->topo == NULL)
+  {
+    return NULL;
+  }
+
+  No *temp = pilha->topo;
+  void *dado = temp->dado;
+  pilha->topo = pilha->topo->prox;
+  free(temp);
+  pilha->tamanho--;
+  return dado;
+}
+
+void *top(Pilha p)
+{
+  PilhaStr *pilha = (PilhaStr *)p;
+  if (pilha->topo == NULL)
+  {
+    return NULL;
+  }
+  return pilha->topo->dado;
+}
+
+int is_empty_pilha(Pilha p)
+{
+  PilhaStr *pilha = (PilhaStr *)p;
+  return pilha->topo == NULL;
+}
+
+int size_pilha(Pilha p)
+{
+  PilhaStr *pilha = (PilhaStr *)p;
+  return pilha->tamanho;
+}
+
+void destroy_pilha(Pilha p)
+{
+  PilhaStr *pilha = (PilhaStr *)p;
+  while (!is_empty_pilha(p))
+  {
+    pop(p);
+  }
+  free(pilha);
+}
