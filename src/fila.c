@@ -106,6 +106,7 @@ Posic get_first_fila(Fila f)
 
 Posic get_next_fila(Fila f, Posic p)
 {
+  (void)f; // Silencia warning de parâmetro não usado
   No *no = (No *)p;
   if (no == NULL)
     return NULL;
@@ -114,6 +115,7 @@ Posic get_next_fila(Fila f, Posic p)
 
 void *get_data_fila(Fila f, Posic p)
 {
+  (void)f; // Silencia warning de parâmetro não usado
   No *no = (No *)p;
   if (no == NULL)
     return NULL;

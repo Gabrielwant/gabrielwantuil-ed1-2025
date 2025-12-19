@@ -18,8 +18,6 @@ static Fila chao = NULL;
 static Fila arena = NULL;
 static Disparador disparadores[100];
 static Carregador carregadores[100];
-static int num_disparadores = 0;
-static int num_carregadores = 0;
 static int maior_id = 0;
 
 // Estatísticas
@@ -38,9 +36,8 @@ static char font_family[50] = "sans-serif";
 static char font_weight[20] = "normal";
 static int font_size = 12;
 
-// Arquivos de saída
+// Arquivo de saída TXT atual
 static FILE *txt_out = NULL;
-static FILE *svg_out = NULL;
 
 void init_sistema()
 {
@@ -112,10 +109,6 @@ void processar_comando_geo(char *linha)
       int id;
       double x, y;
       char corb[50], corp[50], ancora;
-      char *texto_ptr = strchr(linha, ' ');
-
-      // Pular espaços e ler parâmetros
-      int parsed = sscanf(linha, " t %d %lf %lf %s %s %c", &id, &x, &y, corb, corp, &ancora);
 
       // Encontrar início do texto (último parâmetro)
       char *p = linha;
@@ -133,6 +126,8 @@ void processar_comando_geo(char *linha)
       strcpy(texto, p);
       // Remover quebra de linha
       texto[strcspn(texto, "\n")] = 0;
+
+      sscanf(linha, " t %d %lf %lf %s %s %c", &id, &x, &y, corb, corp, &ancora);
 
       Forma f = create_texto(id, x, y, corb, corp, ancora, texto);
       enqueue(chao, f);
@@ -259,13 +254,7 @@ void processar_rjd(char *linha)
   int i = 0;
   while (1)
   {
-    // Shift
-    Forma f = shift_disparador(disparadores[id_disp], lado);
-    if (f == NULL)
-      break;
-
-    // Disparo
-    f = fire_disparador(disparadores[id_disp]);
+    Forma f = fire_disparador(disparadores[id_disp]);
     if (f == NULL)
       break;
 
@@ -453,7 +442,7 @@ int main(int argc, char **argv)
   char *arq_qry = NULL;
   char *sufixo = NULL;
 
-  // PARSING DE ARGUMENTOS CORRIGIDO
+  // PARSING DE ARGUMENTOS
   for (int i = 1; i < argc; i++)
   {
     if (strcmp(argv[i], "-e") == 0 && i + 1 < argc)
@@ -489,6 +478,7 @@ int main(int argc, char **argv)
 
   init_sistema();
 
+  // ========== PROCESSAR ARQUIVO .geo ==========
   char caminho_geo[512];
   snprintf(caminho_geo, sizeof(caminho_geo), "%s/%s", dir_entrada, arq_geo);
 
@@ -508,17 +498,19 @@ int main(int argc, char **argv)
   }
   fclose(geo);
 
+  // Extrair nome base do arquivo .geo
   char nome_geo[256];
   strcpy(nome_geo, arq_geo);
   char *p = strrchr(nome_geo, '.');
   if (p)
     *p = '\0';
 
-  // SEMPRE gera o SVG inicial do .geo
+  // ========== GERAR SVG INICIAL DO .geo ==========
   char svg_geo[512];
   snprintf(svg_geo, sizeof(svg_geo), "%s/%s.svg", dir_saida, nome_geo);
   gerar_svg(svg_geo);
 
+  // ========== PROCESSAR ARQUIVO .qry (SE EXISTIR) ==========
   if (arq_qry)
   {
     char caminho_qry[512];
@@ -531,19 +523,44 @@ int main(int argc, char **argv)
       return 1;
     }
 
+    // ========== EXTRAIR NOME BASE DO ARQUIVO .qry (SEM DIRETÓRIO) ==========
     char nome_qry[256];
-    strcpy(nome_qry, arq_qry);
+    // Procura última barra (tanto / quanto \)
+    char *barra = strrchr(arq_qry, '/');
+    char *barra_win = strrchr(arq_qry, '\\');
+
+    // Usa a barra que aparecer por último (Windows ou Linux)
+    if (barra_win && (!barra || barra_win > barra))
+    {
+      barra = barra_win;
+    }
+
+    if (barra)
+    {
+      strcpy(nome_qry, barra + 1); // Copia apenas após a barra
+    }
+    else
+    {
+      strcpy(nome_qry, arq_qry); // Se não tem barra, copia tudo
+    }
+
+    // Remove extensão .qry
     p = strrchr(nome_qry, '.');
     if (p)
       *p = '\0';
 
-    // Abre arquivo TXT principal (sempre quando há .qry)
-    char txt_normal[512];
-    snprintf(txt_normal, sizeof(txt_normal),
-             "%s/%s-%s.txt", dir_saida, nome_geo, nome_qry);
-    txt_out = fopen(txt_normal, "w");
+    // ========== ABRIR ARQUIVO TXT PARA SAÍDA ==========
+    char txt_path[512];
+    snprintf(txt_path, sizeof(txt_path), "%s/%s-%s.txt", dir_saida, nome_geo, nome_qry);
+    txt_out = fopen(txt_path, "w");
 
-    // Processa todos os comandos do .qry
+    if (!txt_out)
+    {
+      fprintf(stderr, "ERRO: Não conseguiu criar %s\n", txt_path);
+      perror("Motivo");
+    }
+
+    // ========== PROCESSAR COMANDOS DO .qry ==========
     while (fgets(linha, sizeof(linha), qry))
     {
       if (linha[0] == '\n' || linha[0] == '#')
@@ -570,7 +587,7 @@ int main(int argc, char **argv)
 
     fclose(qry);
 
-    // Fecha e escreve estatísticas no TXT principal
+    // ========== ESCREVER ESTATÍSTICAS NO TXT ==========
     if (txt_out)
     {
       fprintf(txt_out, "\n=== ESTATÍSTICAS FINAIS ===\n");
@@ -580,37 +597,41 @@ int main(int argc, char **argv)
       fprintf(txt_out, "Número total de formas esmagadas: %d\n", num_esmagadas);
       fprintf(txt_out, "Número total de formas clonadas: %d\n", num_clonadas);
       fclose(txt_out);
-      txt_out = NULL; // ⭐ IMPORTANTE: limpa o ponteiro
+      txt_out = NULL;
     }
 
-    // SEMPRE gera SVG após processar .qry
+    // ========== GERAR SVG APÓS PROCESSAR .qry ==========
     char svg_qry[512];
-    snprintf(svg_qry, sizeof(svg_qry),
-             "%s/%s-%s.svg", dir_saida, nome_geo, nome_qry);
+    snprintf(svg_qry, sizeof(svg_qry), "%s/%s-%s.svg", dir_saida, nome_geo, nome_qry);
     gerar_svg(svg_qry);
 
-    // SE houver sufixo, gera arquivos adicionais
+    // ========== SE HOUVER SUFIXO, GERAR ARQUIVOS ADICIONAIS ==========
     if (sufixo)
     {
       char txt_suf[512];
-      snprintf(txt_suf, sizeof(txt_suf),
-               "%s/%s-%s-%s.txt", dir_saida, nome_geo, nome_qry, sufixo);
+      snprintf(txt_suf, sizeof(txt_suf), "%s/%s-%s-%s.txt", dir_saida, nome_geo, nome_qry, sufixo);
       txt_out = fopen(txt_suf, "w");
+
+      if (!txt_out)
+      {
+        fprintf(stderr, "ERRO: Não conseguiu criar %s\n", txt_suf);
+        perror("Motivo");
+      }
 
       if (txt_out)
       {
-        fprintf(txt_out, "\n=== ESTATÍSTICAS FINAIS (com sufixo) ===\n");
+        fprintf(txt_out, "=== ESTATÍSTICAS FINAIS (com sufixo) ===\n");
         fprintf(txt_out, "Pontuação final: %.2f\n", pontuacao_total);
         fprintf(txt_out, "Número total de instruções: %d\n", num_instrucoes);
         fprintf(txt_out, "Número total de disparos: %d\n", num_disparos);
         fprintf(txt_out, "Número total de formas esmagadas: %d\n", num_esmagadas);
         fprintf(txt_out, "Número total de formas clonadas: %d\n", num_clonadas);
         fclose(txt_out);
+        txt_out = NULL;
       }
 
       char svg_suf[512];
-      snprintf(svg_suf, sizeof(svg_suf),
-               "%s/%s-%s-%s.svg", dir_saida, nome_geo, nome_qry, sufixo);
+      snprintf(svg_suf, sizeof(svg_suf), "%s/%s-%s-%s.svg", dir_saida, nome_geo, nome_qry, sufixo);
       gerar_svg(svg_suf);
     }
   }
