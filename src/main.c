@@ -447,34 +447,29 @@ void gerar_svg(char *filename)
 
 int main(int argc, char **argv)
 {
-  char *dir_entrada = NULL, *dir_saida = NULL;
-  char *arq_geo = NULL, *arq_qry = NULL;
+  char *dir_entrada = NULL;
+  char *dir_saida = NULL;
+  char *arq_geo = NULL;
+  char *arq_qry = NULL;
   char *sufixo = NULL;
 
-  // Parse argumentos
   for (int i = 1; i < argc; i++)
   {
     if (strcmp(argv[i], "-e") == 0 && i + 1 < argc)
-    {
       dir_entrada = argv[++i];
-    }
     else if (strcmp(argv[i], "-f") == 0 && i + 1 < argc)
-    {
       arq_geo = argv[++i];
-    }
     else if (strcmp(argv[i], "-o") == 0 && i + 1 < argc)
-    {
       dir_saida = argv[++i];
-    }
     else if (strcmp(argv[i], "-q") == 0 && i + 1 < argc)
-    {
       arq_qry = argv[++i];
-    }
+    else
+      sufixo = argv[i];
   }
 
   if (!arq_geo || !dir_saida)
   {
-    fprintf(stderr, "Uso: %s -e <dir_entrada> -f <arq.geo> -o <dir_saida> [-q <arq.qry>]\n", argv[0]);
+    fprintf(stderr, "Uso: %s -e <dir> -f <geo> -o <saida> [-q <qry>] [sufixo]\n", argv[0]);
     return 1;
   }
 
@@ -483,14 +478,13 @@ int main(int argc, char **argv)
 
   init_sistema();
 
-  // Processar arquivo .geo
-  char path_geo[500];
-  snprintf(path_geo, sizeof(path_geo), "%s/%s", dir_entrada, arq_geo);
+  char caminho_geo[512];
+  snprintf(caminho_geo, sizeof(caminho_geo), "%s/%s", dir_entrada, arq_geo);
 
-  FILE *geo = fopen(path_geo, "r");
+  FILE *geo = fopen(caminho_geo, "r");
   if (!geo)
   {
-    fprintf(stderr, "Erro ao abrir %s\n", path_geo);
+    fprintf(stderr, "Erro ao abrir %s\n", caminho_geo);
     return 1;
   }
 
@@ -503,82 +497,65 @@ int main(int argc, char **argv)
   }
   fclose(geo);
 
-  // Gerar SVG do .geo
-  char nome_base[500];
-  strcpy(nome_base, arq_geo);
-  char *ponto = strrchr(nome_base, '.');
-  if (ponto)
-    *ponto = '\0';
+  char nome_geo[256];
+  strcpy(nome_geo, arq_geo);
+  char *p = strrchr(nome_geo, '.');
+  if (p)
+    *p = '\0';
 
-  char path_svg[500];
-  snprintf(path_svg, sizeof(path_svg), "%s/%s.svg", dir_saida, nome_base);
-  gerar_svg(path_svg);
+  char svg_geo[512];
+  snprintf(svg_geo, sizeof(svg_geo), "%s/%s.svg", dir_saida, nome_geo);
+  gerar_svg(svg_geo);
 
-  // Processar arquivo .qry se fornecido
   if (arq_qry)
   {
-    char path_qry[500];
-    snprintf(path_qry, sizeof(path_qry), "%s/%s", dir_entrada, arq_qry);
+    char caminho_qry[512];
+    snprintf(caminho_qry, sizeof(caminho_qry), "%s/%s", dir_entrada, arq_qry);
 
-    FILE *qry = fopen(path_qry, "r");
+    FILE *qry = fopen(caminho_qry, "r");
     if (!qry)
     {
-      fprintf(stderr, "Erro ao abrir %s\n", path_qry);
+      fprintf(stderr, "Erro ao abrir %s\n", caminho_qry);
       return 1;
     }
 
-    // Abrir arquivo TXT de saída
-    char nome_qry[500];
+    char nome_qry[256];
     strcpy(nome_qry, arq_qry);
-    ponto = strrchr(nome_qry, '.');
-    if (ponto)
-      *ponto = '\0';
+    p = strrchr(nome_qry, '.');
+    if (p)
+      *p = '\0';
 
-    char path_txt[500];
-    snprintf(path_txt, sizeof(path_txt), "%s/%s-%s.txt", dir_saida, nome_base, nome_qry);
-    txt_out = fopen(path_txt, "w");
+    char txt_normal[512];
+    snprintf(txt_normal, sizeof(txt_normal),
+             "%s/%s-%s.txt", dir_saida, nome_geo, nome_qry);
+    txt_out = fopen(txt_normal, "w");
 
     while (fgets(linha, sizeof(linha), qry))
     {
       if (linha[0] == '\n' || linha[0] == '#')
         continue;
 
-      char cmd[10];
+      char cmd[16];
       sscanf(linha, " %s", cmd);
 
-      if (strcmp(cmd, "pd") == 0)
-      {
+      if (!strcmp(cmd, "pd"))
         processar_pd(linha);
-      }
-      else if (strcmp(cmd, "lc") == 0)
-      {
+      else if (!strcmp(cmd, "lc"))
         processar_lc(linha);
-      }
-      else if (strcmp(cmd, "atch") == 0)
-      {
+      else if (!strcmp(cmd, "atch"))
         processar_atch(linha);
-      }
-      else if (strcmp(cmd, "shft") == 0)
-      {
+      else if (!strcmp(cmd, "shft"))
         processar_shft(linha);
-      }
-      else if (strcmp(cmd, "dsp") == 0)
-      {
+      else if (!strcmp(cmd, "dsp"))
         processar_dsp(linha);
-      }
-      else if (strcmp(cmd, "rjd") == 0)
-      {
+      else if (!strcmp(cmd, "rjd"))
         processar_rjd(linha);
-      }
-      else if (strcmp(cmd, "calc") == 0)
-      {
+      else if (!strcmp(cmd, "calc"))
         processar_calc();
-      }
     }
 
     fclose(qry);
 
-    // Estatísticas finais
     if (txt_out)
     {
       fprintf(txt_out, "\n=== ESTATÍSTICAS FINAIS ===\n");
@@ -590,9 +567,34 @@ int main(int argc, char **argv)
       fclose(txt_out);
     }
 
-    // Gerar SVG final
-    snprintf(path_svg, sizeof(path_svg), "%s/%s-%s.svg", dir_saida, nome_base, nome_qry);
-    gerar_svg(path_svg);
+    char svg_final[512];
+    snprintf(svg_final, sizeof(svg_final),
+             "%s/%s-%s.svg", dir_saida, nome_geo, nome_qry);
+    gerar_svg(svg_final);
+
+    if (sufixo)
+    {
+      char txt_suf[512];
+      snprintf(txt_suf, sizeof(txt_suf),
+               "%s/%s-%s-%s.txt", dir_saida, nome_geo, nome_qry, sufixo);
+      txt_out = fopen(txt_suf, "w");
+
+      if (txt_out)
+      {
+        fprintf(txt_out, "\n=== ESTATÍSTICAS FINAIS ===\n");
+        fprintf(txt_out, "Pontuação final: %.2f\n", pontuacao_total);
+        fprintf(txt_out, "Número total de instruções: %d\n", num_instrucoes);
+        fprintf(txt_out, "Número total de disparos: %d\n", num_disparos);
+        fprintf(txt_out, "Número total de formas esmagadas: %d\n", num_esmagadas);
+        fprintf(txt_out, "Número total de formas clonadas: %d\n", num_clonadas);
+        fclose(txt_out);
+      }
+
+      char svg_suf[512];
+      snprintf(svg_suf, sizeof(svg_suf),
+               "%s/%s-%s-%s.svg", dir_saida, nome_geo, nome_qry, sufixo);
+      gerar_svg(svg_suf);
+    }
   }
 
   return 0;

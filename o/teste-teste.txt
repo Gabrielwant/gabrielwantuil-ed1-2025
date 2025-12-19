@@ -1,0 +1,153 @@
+Carregador 1:
+  Circulo id=1 centro=(100.00,100.00) raio=50.00 corb=black corp=blue
+  Circulo id=2 centro=(300.00,100.00) raio=45.00 corb=red corp=yellow
+  Circulo id=3 centro=(500.00,100.00) raio=40.00 corb=green corp=orange
+  Circulo id=4 centro=(150.00,250.00) raio=30.00 corb=purple corp=pink
+  Circulo id=5 centro=(350.00,250.00) raio=28.00 corb=brown corp=gold
+Carregador 2:
+  Circulo id=6 centro=(550.00,250.00) raio=32.00 corb=navy corp=lightblue
+  Retangulo id=7 ancora=(100.00,400.00) w=80.00 h=60.00 corb=darkred corp=lightcoral
+  Retangulo id=8 ancora=(250.00,400.00) w=90.00 h=70.00 corb=darkgreen corp=lightgreen
+  Retangulo id=9 ancora=(450.00,400.00) w=75.00 h=65.00 corb=darkblue corp=lightblue
+  Retangulo id=10 ancora=(100.00,550.00) w=40.00 h=30.00 corb=black corp=white
+Carregador 3:
+  Retangulo id=11 ancora=(200.00,550.00) w=45.00 h=35.00 corb=gray corp=silver
+  Retangulo id=12 ancora=(300.00,550.00) w=50.00 h=40.00 corb=maroon corp=pink
+  Linha id=13 p1=(0.00,200.00) p2=(600.00,200.00) cor=gray
+  Linha id=14 p1=(0.00,350.00) p2=(600.00,350.00) cor=silver
+Carregador 4:
+  Linha id=15 p1=(0.00,500.00) p2=(600.00,500.00) cor=lightgray
+  Texto id=16 ancora=(50.00,50.00) ancora=i texto="BOCHA GEOMETRICA" corb=black corp=white
+  Texto id=17 ancora=(300.00,300.00) ancora=m texto="Zona de Combate" corb=red corp=white
+  Texto id=18 ancora=(450.00,600.00) ancora=f texto="Fim do Campo" corb=blue corp=white
+Carregador 5:
+  Circulo id=19 centro=(200.00,150.00) raio=25.00 corb=cyan corp=magenta
+  Circulo id=20 centro=(400.00,150.00) raio=22.00 corb=lime corp=coral
+  Retangulo id=21 ancora=(150.00,480.00) w=35.00 h=25.00 corb=indigo corp=violet
+  Retangulo id=22 ancora=(350.00,480.00) w=38.00 h=28.00 corb=teal corp=aqua
+  Circulo id=23 centro=(120.00,120.00) raio=15.00 corb=red corp=white
+  Circulo id=24 centro=(180.00,120.00) raio=18.00 corb=blue corp=white
+Carregador 6:
+  Circulo id=25 centro=(240.00,120.00) raio=16.00 corb=green corp=white
+  Retangulo id=26 ancora=(500.00,500.00) w=60.00 h=50.00 corb=orange corp=brown
+  Retangulo id=27 ancora=(580.00,500.00) w=55.00 h=45.00 corb=purple corp=gold
+  Circulo id=28 centro=(600.00,300.00) raio=35.00 corb=crimson corp=yellow
+  Circulo id=29 centro=(650.00,400.00) raio=30.00 corb=forestgreen corp=lime
+  Linha id=30 p1=(100.00,100.00) p2=(200.00,200.00) cor=black
+Forma em posição de disparo (disparador 1):
+  Retangulo id=10 ancora=(100.00,550.00) w=40.00 h=30.00 corb=black corp=white
+Disparo (disparador 1):
+  Retangulo id=10 ancora=(100.00,100.00) w=40.00 h=30.00 corb=black corp=white
+  Posição final: (100.00, 100.00)
+Forma em posição de disparo (disparador 1):
+  Retangulo id=9 ancora=(450.00,400.00) w=75.00 h=65.00 corb=darkblue corp=lightblue
+Disparo (disparador 1):
+  Retangulo id=9 ancora=(120.00,100.00) w=75.00 h=65.00 corb=darkblue corp=lightblue
+  Posição final: (120.00, 100.00)
+Forma em posição de disparo (disparador 2):
+  Linha id=13 p1=(0.00,200.00) p2=(600.00,200.00) cor=gray
+Disparo (disparador 2):
+  Linha id=13 p1=(0.00,200.00) p2=(600.00,200.00) cor=gray
+  Posição final: (400.00, 100.00)
+Forma em posição de disparo (disparador 2):
+  Linha id=14 p1=(0.00,350.00) p2=(600.00,350.00) cor=silver
+Disparo (disparador 2):
+  Linha id=14 p1=(0.00,350.00) p2=(600.00,350.00) cor=silver
+  Posição final: (420.00, 100.00)
+
+=== PROCESSAMENTO DA ARENA ===
+
+Comparando forma 10 (área=1200.00) com forma 9 (área=4875.00)
+  Sobreposição: SIM
+  Forma 10 ESMAGADA (área menor) na posição (100.00, 100.00)
+
+Comparando forma 13 (área=1200.00) com forma 14 (área=1200.00)
+  Sobreposição: NÃO
+
+Pontuação deste round: 1200.00
+Pontuação total acumulada: 1200.00
+Rajada disparo 0:
+  Retangulo id=8 ancora=(150.00,200.00) w=90.00 h=70.00 corb=darkgreen corp=lightgreen
+  Posição: (150.00, 200.00)
+Rajada disparo 1:
+  Retangulo id=7 ancora=(170.00,200.00) w=80.00 h=60.00 corb=darkred corp=lightcoral
+  Posição: (170.00, 200.00)
+Rajada disparo 2:
+  Circulo id=6 centro=(190.00,200.00) raio=32.00 corb=navy corp=lightblue
+  Posição: (190.00, 200.00)
+Rajada disparo 0:
+  Retangulo id=12 ancora=(350.00,150.00) w=50.00 h=40.00 corb=maroon corp=pink
+  Posição: (350.00, 150.00)
+Rajada disparo 1:
+  Retangulo id=11 ancora=(350.00,180.00) w=45.00 h=35.00 corb=gray corp=silver
+  Posição: (350.00, 180.00)
+
+=== PROCESSAMENTO DA ARENA ===
+
+Comparando forma 8 (área=6300.00) com forma 7 (área=4800.00)
+  Sobreposição: SIM
+  Forma 8 muda cor de borda de forma 7
+  Forma 8 clonada como forma 33
+
+Comparando forma 6 (área=3216.99) com forma 12 (área=2000.00)
+  Sobreposição: NÃO
+
+Pontuação deste round: 0.00
+Pontuação total acumulada: 1200.00
+Forma em posição de disparo (disparador 3):
+  Linha id=30 p1=(100.00,100.00) p2=(200.00,200.00) cor=black
+Disparo (disparador 3):
+  Linha id=30 p1=(100.00,100.00) p2=(200.00,200.00) cor=black
+  Posição final: (600.00, 250.00)
+Forma em posição de disparo (disparador 3):
+  Circulo id=24 centro=(180.00,120.00) raio=18.00 corb=blue corp=white
+Disparo (disparador 3):
+  Circulo id=24 centro=(620.00,250.00) raio=18.00 corb=blue corp=white
+  Posição final: (620.00, 250.00)
+Forma em posição de disparo (disparador 3):
+  Circulo id=29 centro=(650.00,400.00) raio=30.00 corb=forestgreen corp=lime
+Disparo (disparador 3):
+  Circulo id=29 centro=(640.00,250.00) raio=30.00 corb=forestgreen corp=lime
+  Posição final: (640.00, 250.00)
+
+=== PROCESSAMENTO DA ARENA ===
+
+Comparando forma 30 (área=282.84) com forma 24 (área=1017.88)
+  Sobreposição: NÃO
+
+Pontuação deste round: 0.00
+Pontuação total acumulada: 1200.00
+Rajada disparo 0:
+  Circulo id=23 centro=(700.00,300.00) raio=15.00 corb=red corp=white
+  Posição: (700.00, 300.00)
+Rajada disparo 1:
+  Retangulo id=22 ancora=(715.00,315.00) w=38.00 h=28.00 corb=teal corp=aqua
+  Posição: (715.00, 315.00)
+Rajada disparo 2:
+  Retangulo id=21 ancora=(730.00,330.00) w=35.00 h=25.00 corb=indigo corp=violet
+  Posição: (730.00, 330.00)
+Rajada disparo 3:
+  Circulo id=20 centro=(745.00,345.00) raio=22.00 corb=lime corp=coral
+  Posição: (745.00, 345.00)
+Rajada disparo 4:
+  Circulo id=19 centro=(760.00,360.00) raio=25.00 corb=cyan corp=magenta
+  Posição: (760.00, 360.00)
+
+=== PROCESSAMENTO DA ARENA ===
+
+Comparando forma 23 (área=706.86) com forma 22 (área=1064.00)
+  Sobreposição: NÃO
+
+Comparando forma 21 (área=875.00) com forma 20 (área=1520.53)
+  Sobreposição: SIM
+  Forma 21 ESMAGADA (área menor) na posição (730.00, 330.00)
+
+Pontuação deste round: 875.00
+Pontuação total acumulada: 2075.00
+
+=== ESTATÍSTICAS FINAIS ===
+Pontuação final: 2075.00
+Número total de instruções: 33
+Número total de disparos: 17
+Número total de formas esmagadas: 2
+Número total de formas clonadas: 1
