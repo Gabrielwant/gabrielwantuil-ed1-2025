@@ -182,13 +182,23 @@ void processar_atch(char *linha)
   int id_disp, id_esq, id_dir;
   sscanf(linha, " atch %d %d %d", &id_disp, &id_esq, &id_dir);
 
+  // Criar carregadores se não existirem
+  if (carregadores[id_esq] == NULL)
+  {
+    carregadores[id_esq] = create_carregador(id_esq);
+  }
+
+  if (carregadores[id_dir] == NULL)
+  {
+    carregadores[id_dir] = create_carregador(id_dir);
+  }
+
   attach_carregadores(disparadores[id_disp],
                       carregadores[id_esq],
                       carregadores[id_dir]);
 
   num_instrucoes++;
 }
-
 void processar_shft(char *linha)
 {
   int id_disp, n;
@@ -254,7 +264,19 @@ void processar_rjd(char *linha)
   int i = 0;
   while (1)
   {
+    // Tentar fazer shift do lado especificado
+    Forma f_shifted = shift_disparador(disparadores[id_disp], lado);
+
+    // Se não conseguiu do lado especificado, tentar o outro lado
+    if (f_shifted == NULL)
+    {
+      char outro_lado = (lado == 'e' || lado == 'E') ? 'd' : 'e';
+      f_shifted = shift_disparador(disparadores[id_disp], outro_lado);
+    }
+
+    // Agora disparar
     Forma f = fire_disparador(disparadores[id_disp]);
+
     if (f == NULL)
       break;
 
