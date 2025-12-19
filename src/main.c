@@ -453,18 +453,29 @@ int main(int argc, char **argv)
   char *arq_qry = NULL;
   char *sufixo = NULL;
 
+  // PARSING DE ARGUMENTOS CORRIGIDO
   for (int i = 1; i < argc; i++)
   {
     if (strcmp(argv[i], "-e") == 0 && i + 1 < argc)
+    {
       dir_entrada = argv[++i];
+    }
     else if (strcmp(argv[i], "-f") == 0 && i + 1 < argc)
+    {
       arq_geo = argv[++i];
+    }
     else if (strcmp(argv[i], "-o") == 0 && i + 1 < argc)
+    {
       dir_saida = argv[++i];
+    }
     else if (strcmp(argv[i], "-q") == 0 && i + 1 < argc)
+    {
       arq_qry = argv[++i];
-    else
+    }
+    else if (argv[i][0] != '-')
+    {
       sufixo = argv[i];
+    }
   }
 
   if (!arq_geo || !dir_saida)
@@ -503,6 +514,7 @@ int main(int argc, char **argv)
   if (p)
     *p = '\0';
 
+  // SEMPRE gera o SVG inicial do .geo
   char svg_geo[512];
   snprintf(svg_geo, sizeof(svg_geo), "%s/%s.svg", dir_saida, nome_geo);
   gerar_svg(svg_geo);
@@ -525,11 +537,13 @@ int main(int argc, char **argv)
     if (p)
       *p = '\0';
 
+    // Abre arquivo TXT principal (sempre quando há .qry)
     char txt_normal[512];
     snprintf(txt_normal, sizeof(txt_normal),
              "%s/%s-%s.txt", dir_saida, nome_geo, nome_qry);
     txt_out = fopen(txt_normal, "w");
 
+    // Processa todos os comandos do .qry
     while (fgets(linha, sizeof(linha), qry))
     {
       if (linha[0] == '\n' || linha[0] == '#')
@@ -556,6 +570,7 @@ int main(int argc, char **argv)
 
     fclose(qry);
 
+    // Fecha e escreve estatísticas no TXT principal
     if (txt_out)
     {
       fprintf(txt_out, "\n=== ESTATÍSTICAS FINAIS ===\n");
@@ -565,13 +580,16 @@ int main(int argc, char **argv)
       fprintf(txt_out, "Número total de formas esmagadas: %d\n", num_esmagadas);
       fprintf(txt_out, "Número total de formas clonadas: %d\n", num_clonadas);
       fclose(txt_out);
+      txt_out = NULL; // ⭐ IMPORTANTE: limpa o ponteiro
     }
 
-    char svg_final[512];
-    snprintf(svg_final, sizeof(svg_final),
+    // SEMPRE gera SVG após processar .qry
+    char svg_qry[512];
+    snprintf(svg_qry, sizeof(svg_qry),
              "%s/%s-%s.svg", dir_saida, nome_geo, nome_qry);
-    gerar_svg(svg_final);
+    gerar_svg(svg_qry);
 
+    // SE houver sufixo, gera arquivos adicionais
     if (sufixo)
     {
       char txt_suf[512];
@@ -581,7 +599,7 @@ int main(int argc, char **argv)
 
       if (txt_out)
       {
-        fprintf(txt_out, "\n=== ESTATÍSTICAS FINAIS ===\n");
+        fprintf(txt_out, "\n=== ESTATÍSTICAS FINAIS (com sufixo) ===\n");
         fprintf(txt_out, "Pontuação final: %.2f\n", pontuacao_total);
         fprintf(txt_out, "Número total de instruções: %d\n", num_instrucoes);
         fprintf(txt_out, "Número total de disparos: %d\n", num_disparos);
